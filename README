@@ -1,0 +1,8 @@
+Title : Mass Transit Ticketing Machine Using SystemVerilog
+Problem statement
+The goal of this project is to design and implement a finite state machine (FSM) for a mass transit ticketing machine using SystemVerilog.
+Abstract
+This paper presents the design and implementation of a finite state machine (FSM) for a mass transit ticketing machine using SystemVerilog. 
+The machine accepts Rs.10/- and Rs.20/-, dispensing a ticket once the total reaches Rs.50/-, and returning all bills if the total exceeds Rs.50/-, without providing change. 
+The FSM is designed to transition through four primary states. The state transitions are driven by clock signals and controlled through combinational logic, ensuring the system's reliability and efficiency. 
+This implementation demonstrates the practical application of FSM concepts in digital system design, providing a robust solution for automated ticket vending in mass transit systems.
