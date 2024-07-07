@@ -1,0 +1,211 @@
+
+ module ticket(input clk,arstn,transaction , Time_up , input [1:0]dest_sel,input [7:0]money ,output reg Timer_enable, output reg [1:0]ticket_out , output reg [7:0]refund,change);
+ 
+ parameter int ticket_B =10;
+ parameter int ticket_C =30;
+ parameter int ticket_D =50;
+ 
+ reg input_money = money;
+ 
+ enum {idle , destn_sel , station_B , station_C , station_D  ,Invalid_dest, Refund_B , Change_B , Ticket_B , Refund_C , Change_C, Ticket_C , Refund_D , Change_D , Ticket_D} c_state,n_state;
+
+ always_ff @(posedge clk , negedge arstn) begin
+    if(!arstn)
+        c_state <= idle;
+    else
+        c_state <= n_state;
+ end
+ 
+ always_comb begin
+    case(c_state)
+        idle : begin
+                    if(transaction)
+                        n_state = destn_sel;
+                    else
+                        n_state = idle;
+               end
+               
+        destn_sel : begin
+                        if(dest_sel == 0)
+                                n_state = Invalid_dest;
+                        else if(dest_sel == 1)
+                                n_state = station_B;
+                            
+                        else if(dest_sel == 2)
+                                n_state = station_C;
+                       
+                        else 
+                                n_state = station_D; 
+                        
+                    end
+                    
+        station_B : begin
+                        if(money == ticket_B)
+                            n_state = Ticket_B;
+                        else if(money > ticket_B)
+                            n_state = Change_B;
+                        else
+                            n_state = Refund_B;
+                    end
+                        
+                        
+        station_C : begin
+                        if(money == ticket_C)
+                            n_state = Ticket_C;
+                        else if(money > ticket_C)
+                            n_state = Change_C;
+                        else
+                            n_state = Refund_C;
+                    end
+                        
+                        
+        station_D : begin
+                        if(money == ticket_D)
+                            n_state = Ticket_D;
+                        else if(money > ticket_D)
+                            n_state = Change_D;
+                        else
+                            n_state = Refund_D;
+                    end
+                    
+        Refund_B : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                             
+                   end
+        Ticket_B  : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                   end
+        Change_B  : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                   end 
+                   
+        Refund_C : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                             
+                   end
+        Ticket_C  : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                   end
+        Change_C  : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                   end 
+        Refund_D : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                             
+                   end
+        Ticket_D  : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                   end
+        Change_D  : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state = Refund_B;
+                   end  
+       Invalid_dest : begin
+                        if(Time_up)
+                            n_state = idle;
+                        else
+                            n_state =  Invalid_dest;
+                      end
+    endcase
+    
+    end
+    
+ always_comb begin
+ 
+        Timer_enable = 1'b0;
+        ticket_out = 2'b00;
+        refund = 2'b00;
+        change = 2'b00;
+        
+        case(c_state)
+           Refund_B : begin
+                        ticket_out = 2'b00;
+                        refund = input_money;
+                        change = 2'b00;
+                      end
+          Ticket_B :  begin
+                        ticket_out = 2'b01;
+                        refund = 2'b00;
+                        change = 2'b00;
+                      end
+         Change_B :  begin
+                        ticket_out = 2'b01;
+                        refund = 2'b00;
+                        change = input_money - ticket_C;
+                      end
+                      
+        Refund_C : begin
+                        ticket_out = 2'b00;
+                        refund = input_money;
+                        change = 2'b00;
+                      end
+          Ticket_C :  begin
+                        ticket_out = 2'b10;
+                        refund = 2'b00;
+                        change = 2'b00;
+                      end
+         Change_C :  begin
+                        ticket_out = 2'b10;
+                        refund = 2'b00;
+                        change = input_money - ticket_D;
+                      end
+        
+        Refund_D : begin
+                        ticket_out = 2'b00;
+                        refund = input_money;
+                        change = 2'b00;
+                      end
+          Ticket_D :  begin
+                        ticket_out = 2'b11;
+                        refund = 2'b00;
+                        change = 2'b00;
+                      end
+         Change_D :  begin
+                        ticket_out = 2'b11;
+                        refund = 2'b00;
+                        change = input_money - ticket_B;
+                      end
+       Invalid_dest : begin
+                        ticket_out = 2'b00;
+                        refund = 2'b00;
+                        change = input_money;
+                      end
+       default : begin
+                        ticket_out = 2'b00;
+                        refund = 2'b00;
+                        change = input_money;
+                 end
+         
+        endcase
+        
+ end
+    
+   
+ 
+ endmodule
